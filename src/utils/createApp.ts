@@ -4,6 +4,8 @@ import cors from 'cors';
 import session from 'express-session';
 import passport from 'passport';
 import routes from '../routes';
+import store from 'connect-mongo';
+
 config();
 
 require('../strategies/discord')
@@ -24,6 +26,9 @@ export function createApp(): Express {
             resave: false,
             saveUninitialized: false,
             cookie: { maxAge: 60000 * 60 },
+            store: store.create({
+                mongoUrl: process.env.MONGODB_DATABASE_URI,
+            }),
         })
     );
     
