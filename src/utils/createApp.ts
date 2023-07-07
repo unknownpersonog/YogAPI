@@ -8,8 +8,6 @@ import store from 'connect-mongo';
 
 config();
 
-require('../strategies/discord')
-
 export function createApp(): Express {
     const app = express();
 

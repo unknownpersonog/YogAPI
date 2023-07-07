@@ -1,3 +1,2 @@
-import User from './User';
-
-export { User };
+import DiscordAPI from './DiscordAPI'
+export { DiscordAPI };

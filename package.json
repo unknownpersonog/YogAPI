@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node ./dist/index.js",
     "test": "nodemon ./src/index.ts",
+    "testtreeks": "nodemon ./src/treeks.ts",
     "build": "tsc"
   },
   "repository": {
