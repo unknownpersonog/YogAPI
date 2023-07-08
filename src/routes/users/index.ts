@@ -1,11 +1,14 @@
 import { Request, Router, Response } from "express";
 const router = Router();
 import createUserRouter from './create';
+import verifyEmailRouter from './verify';
 import { DiscordAPI } from "../../database/schemas";
+import { PartialInfo } from "../../utils/types";
 
 router.use('/create', createUserRouter)
+router.use('/verify', verifyEmailRouter)
 
-router.get('/:discordId', async (req: Request, res: Response) => {
+router.get('/info/:discordId', async (req: Request, res: Response) => {
   try {
     const discordId = req.params.discordId;
 

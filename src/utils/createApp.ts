@@ -16,7 +16,7 @@ export function createApp(): Express {
     app.use(express.urlencoded());
     
     // Using CORS to block external requests
-    app.use(cors({ origin: ['http://localhost:3000'], credentials: true }));
+    app.use(cors({ origin: ['http://0.0.0.0'], credentials: true }));
 
     app.use(
         session({
