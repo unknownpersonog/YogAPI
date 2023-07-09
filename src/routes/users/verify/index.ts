@@ -41,10 +41,10 @@ router.post('/mail', async(req: Request, res: Response) => {
       from: `${process.env.COMPANY_NAME} <${process.env.SMTP_MAIL}>`,
       to: email,
       subject: 'Email Verification',
-      text: `Please click the following link to verify your email: 
-             ${process.env.DOMAIN}/api/users/verify/token?token=${verificationToken}&discordId=${discordId}`,
-      html: `<p>Please click the following link to verify your email:</p>
-             <p><a href="${process.env.DOMAIN}/api/users/verify/token?token=${verificationToken}&discordId=${discordId}">Verify Email</a></p>`,
+      text: `Your code for verification is: 
+             ${verificationToken}`,
+      html: `<p>Your code for verification is:</p>
+             <p><h1>${verificationToken}</h1></p>`,
     };
 
     transporter.sendMail(mailOptions);
@@ -55,9 +55,9 @@ router.post('/mail', async(req: Request, res: Response) => {
   }
 });
 
-router.get('/token', async(req: Request, res: Response) => {
-  const token = req.query.token;
-  const discordId = req.query.discordId;
+router.post('/token', async(req: Request, res: Response) => {
+  const token = req.body.token;
+  const discordId = req.body.discordId;
 
   if (!token || !discordId) {
     return res.status(404).send('Invalid Request');
@@ -73,6 +73,10 @@ router.get('/token', async(req: Request, res: Response) => {
     const expiresAt = user.verificationTokenExpiresAt;
 
     if (!expiresAt || new Date() > expiresAt) {
+      await DiscordAPI.findOneAndUpdate(
+        { discordId },
+        { $unset: { verificationToken: '', verificationTokenExpiresAt: '' } }
+      );
       return res.status(400).send('Token Expired');
     }
 
@@ -102,11 +106,11 @@ router.get('/token', async(req: Request, res: Response) => {
 });
 
 function generateVerificationToken() {
-  const buffer = crypto.randomBytes(32);
-  const verificationToken = buffer.toString('hex');
+  const verificationToken = Math.floor(100000 + Math.random() * 900000); // Generate a random 6-digit code
   const expiresAt = new Date();
   expiresAt.setMinutes(expiresAt.getMinutes() + 60); // Expiration time is set to 60 minutes from now
   return { verificationToken, expiresAt };
 }
+
 
 export default router;
