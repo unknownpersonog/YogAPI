@@ -14,7 +14,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv_1 = require("dotenv");
 const express_1 = require("express");
-const crypto_1 = __importDefault(require("crypto"));
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const schemas_1 = require("../../../database/schemas");
 (0, dotenv_1.config)();
@@ -43,10 +42,10 @@ router.post('/mail', (req, res) => __awaiter(void 0, void 0, void 0, function* (
             from: `${process.env.COMPANY_NAME} <${process.env.SMTP_MAIL}>`,
             to: email,
             subject: 'Email Verification',
-            text: `Please click the following link to verify your email: 
-             ${process.env.DOMAIN}/api/users/verify/token?token=${verificationToken}&discordId=${discordId}`,
-            html: `<p>Please click the following link to verify your email:</p>
-             <p><a href="${process.env.DOMAIN}/api/users/verify/token?token=${verificationToken}&discordId=${discordId}">Verify Email</a></p>`,
+            text: `Your code for verification is: 
+             ${verificationToken}`,
+            html: `<p>Your code for verification is:</p>
+             <p><h1>${verificationToken}</h1></p>`,
         };
         transporter.sendMail(mailOptions);
         res.status(200).send('Email Sent');
@@ -56,9 +55,9 @@ router.post('/mail', (req, res) => __awaiter(void 0, void 0, void 0, function* (
         res.status(500).json({ error: 'An error occurred while sending the verification email.' });
     }
 }));
-router.get('/token', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const token = req.query.token;
-    const discordId = req.query.discordId;
+router.post('/token', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const token = req.body.token;
+    const discordId = req.body.discordId;
     if (!token || !discordId) {
         return res.status(404).send('Invalid Request');
     }
@@ -69,6 +68,7 @@ router.get('/token', (req, res) => __awaiter(void 0, void 0, void 0, function* (
         }
         const expiresAt = user.verificationTokenExpiresAt;
         if (!expiresAt || new Date() > expiresAt) {
+            yield schemas_1.DiscordAPI.findOneAndUpdate({ discordId }, { $unset: { verificationToken: '', verificationTokenExpiresAt: '' } });
             return res.status(400).send('Token Expired');
         }
         if (user.verified === 'true') {
@@ -89,8 +89,7 @@ router.get('/token', (req, res) => __awaiter(void 0, void 0, void 0, function* (
     }
 }));
 function generateVerificationToken() {
-    const buffer = crypto_1.default.randomBytes(32);
-    const verificationToken = buffer.toString('hex');
+    const verificationToken = Math.floor(100000 + Math.random() * 900000); // Generate a random 6-digit code
     const expiresAt = new Date();
     expiresAt.setMinutes(expiresAt.getMinutes() + 60); // Expiration time is set to 60 minutes from now
     return { verificationToken, expiresAt };
