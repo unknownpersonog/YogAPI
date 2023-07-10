@@ -1,32 +1,42 @@
+---
+name: "Make Release"
+
 on:
   push:
-    # Sequence of patterns matched against refs/tags
-    tags:
-      - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
-
-name: Create Release
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
 
 jobs:
-  build:
-    name: Create Release
-    runs-on: ubuntu-latest
+  pre-release:
+    name: "Release"
+    runs-on: "ubuntu-latest"
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+      - name: Use Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: Install Dependencies
+        run: |
+          npm i
+      - name: Build
+        run: |
+          npm run build
       - name: Create zip file
         run: |
           zip -r dist.zip dist
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+      - name: "Release" 
+        run: |
+          echo "done!"
+
+      - uses: "marvinpinto/action-automatic-releases@latest"
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          body: |
-            Changes in this Release
-            - Automatic Release provided by Github Actions.
-          draft: false
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "latest"
           prerelease: false
-          files: dist.zip
+          title: "Development Build"
+          files: |
+            dist.zip
