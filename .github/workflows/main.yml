@@ -1,0 +1,53 @@
+name: Test and Deploy
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [16.x, 18.x]
+    
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js
+      uses: actions/setup-node@v2
+      with:
+          node-version: ${{ matrix.node-version }}
+    - name: Install Dependencies
+      run: |
+        npm i
+    - name: Build and Run App
+      env:
+        SMTP_HOST: ${{ secrets.SMTP_HOST }}
+        COMPANY_NAME: ${{ secrets.COMPANY_NAME }}
+        ENVIRONMENT: ${{ secrets.ENVIRONMENT }}
+        MONGODB_DATABASE_URI: ${{ secrets.MONGODB_DATABASE_URI }}
+        PORT: ${{ secrets.PORT }}
+        SMTP_MAIL: ${{ secrets.SMTP_MAIL }}
+        SMTP_PASS: ${{ secrets.SMTP_PASS }}
+        SMTP_PORT: ${{ secrets.SMTP_PORT }}
+        SMTP_USER: ${{ secrets.SMTP_USER }}
+      run: |
+        npm run build
+        npm start &
+    - name: Wait for Server
+      timeout-minutes: 5
+      run: |
+        start=$(date +%s)
+        while ! nc -z localhost 3000; do
+          now=$(date +%s)
+          elapsed=$(expr $now - $start)
+          if [ $elapsed -gt 300 ]; then
+            echo "Server did not start in 5 minutes, exiting..."
+            exit 1
+          fi
+          sleep 1
+        done
