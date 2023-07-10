@@ -42,7 +42,7 @@ jobs:
       timeout-minutes: 5
       run: |
         start=$(date +%s)
-        while ! nc -z localhost 3000; do
+        while ! nc -z localhost 3001; do
           now=$(date +%s)
           elapsed=$(expr $now - $start)
           if [ $elapsed -gt 300 ]; then
