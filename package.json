@@ -32,13 +32,14 @@
     "@types/nodemailer": "^6.4.8",
     "@types/passport": "^1.0.12",
     "@types/passport-discord": "^0.1.6",
+    "@types/response-time": "^2.3.5",
     "nodemon": "^2.0.22",
     "ts-node": "^10.9.1",
     "typescript": "^5.1.6"
   },
   "dependencies": {
-    "axios": "^1.4.0",
     "adm-zip": "^0.5.10",
+    "axios": "^1.4.0",
     "connect-mongo": "^5.0.0",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
@@ -47,6 +48,7 @@
     "mongoose": "^7.3.1",
     "nodemailer": "^6.9.3",
     "passport": "^0.6.0",
-    "passport-discord": "^0.1.4"
+    "passport-discord": "^0.1.4",
+    "response-time": "^2.3.2"
   }
 }
