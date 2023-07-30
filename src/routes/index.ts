@@ -5,9 +5,10 @@ const router = Router();
 
 router.use('/users', usersRouter);
 
-router.use('/ping', (res: Response) => {
+router.use('/ping', async (req: Request, res: Response) => {
     try {
         res.status(200).send('Pong!');
+        return;
     }
     catch (err) {
         res.status(501).send('Internal Server Error')
