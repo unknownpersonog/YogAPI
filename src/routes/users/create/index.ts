@@ -19,7 +19,7 @@ router.post('/', async (req: Request, res: Response) => {
       const newUser = new DiscordAPI({
         email,
         discordId,
-        vps: [{ id: 'N/A' }]
+        vps: { id: '0' }
     });
   
       await newUser.save();
