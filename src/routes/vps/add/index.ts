@@ -10,6 +10,9 @@ router.post('/', async (req: Request, res: Response) => {
       const vpsPort = await getLastId() + 5001;
       const vpsName = req.body.vps_name;
       const vpsOs = req.body.vps_os;
+      const vpsPass = req.body.vps_pass;
+      const vpsUser = req.body.vps_user;
+      const vpsIp = req.body.vps_ip
       const vpsId = await getLastId() + 1;
   
       if (!vpsName || !vpsOs) {
@@ -26,6 +29,9 @@ router.post('/', async (req: Request, res: Response) => {
         name: vpsName,
         os: vpsOs,
         id: vpsId,
+        pass: vpsPass,
+        user: vpsUser,
+        ip: vpsIp
       });
   
       await newVPS.save();
