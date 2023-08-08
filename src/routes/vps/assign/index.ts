@@ -22,8 +22,8 @@ router.post('/', async(req: Request, res: Response) => {
           );
           try {
               await DiscordAPI.findOneAndUpdate(
-                { discordId: discordId, 'vps.id': 'N/A' },
-                { $set: { "vps.$.id": availableVPSId } },
+                { discordId: discordId },
+                { $set: { "vps.id": availableVPSId } },
                 { new: true }
               )
           }

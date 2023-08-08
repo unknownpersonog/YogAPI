@@ -6,11 +6,9 @@ const discordAPISchema = new mongoose.Schema({
     verificationToken: { type: String, required: false },
     verificationTokenExpiresAt: { type: Date, required: false },
     verified: { type: String, required: false, default: 'false' },
-    vps: [
-        {
-          id: { type: String, default: 'N/A' }
+    vps: {
+          id: { type: String, default: '0' }
         }
-      ]
 });
   
   export default mongoose.model('discordUsers', discordAPISchema)
