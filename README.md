@@ -6,6 +6,12 @@ Application Programming Interface (API) for UnknownVPS and can be used for vario
 Brought by UnknownVPS Team
 
 
+
+## Official API Hook
+#### The API is officially hooked into a discord bot
+Bot Link: [Discord Bot by LongZ3r](https://github.com/longz3r/unknownvps-discord-bot)
+
+
 ## Acknowledgements
 
  - [LongZ3r](https://github.com/LongZ3r) - Discord Bot Contribution
