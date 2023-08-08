@@ -12,7 +12,7 @@ router.post('/', async (req: Request, res: Response) => {
       const vpsOs = req.body.vps_os;
       const vpsPass = req.body.vps_pass;
       const vpsUser = req.body.vps_user;
-      const vpsIp = req.body.vps_ip
+      const vpsIp = req.body.vps_ip;
       const vpsId = await getLastId() + 1;
   
       if (!vpsName || !vpsOs) {
