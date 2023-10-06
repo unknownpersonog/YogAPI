@@ -78,7 +78,7 @@ router.post('/mail', async(req: Request, res: Response) => {
                       <p style="padding-bottom: 16px;" align="center">Please use the verification code below to sign in.</p>
                       <p style="padding-bottom: 16px; font-size: 30px; " align="center"><strong style="font-size: 130%">${verificationToken}</strong></p>
                       <p style="padding-bottom: 16px;" align="center">If you didn’t request this, you can ignore this email.</p>
-                      <p style="padding-bottom: 16px" align="center">Thanks,<br> ${process.env.COMPANY_NAME}</p>
+                      <p style="padding-bottom: 16px" align="center">Thanks,<br> ${settings.companyName}</p>
                     </div>
                   </div>
                   <div style="padding-top: 20px; color: rgb(153, 153, 153); text-align: center; --darkreader-inline-color: #a8a095;"
