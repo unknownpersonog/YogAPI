@@ -142,4 +142,3 @@ This guide considers you have Node 16 or 18 installed and you are doing all thin
 | Parameter | Type     | Description                       |
 | :-------- | :------- | :-------------------------------- |
 | `discordId`      | `string` | **Required**. Discord ID to assign VPS to. |
-
