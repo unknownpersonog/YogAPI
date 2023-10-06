@@ -8,3 +8,15 @@ export type PartialInfo = {
         }
     ],
 }
+
+export interface Settings {
+    companyName: String,
+
+    smtp: {
+        host: String,
+        port: Number,
+        user: String,
+        pass: String,
+        mail: String
+    }
+}

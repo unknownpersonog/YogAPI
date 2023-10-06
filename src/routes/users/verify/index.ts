@@ -1,8 +1,8 @@
 import { config } from 'dotenv'
 import { Request, Response, Router } from "express";
-import crypto from 'crypto';
 import nodemailer from 'nodemailer';
 import { DiscordAPI } from "../../../database/schemas";
+import { settingsParser } from '../../../services/settingsParser';
 config();
 
 const router = Router();
@@ -12,7 +12,7 @@ router.post('/mail', async(req: Request, res: Response) => {
   const email = req.body.email;
   const userCheck = await DiscordAPI.findOne({ discordId });
   if (!userCheck) {
-    return res.status(404).send('User not found')
+    return res.status(404).json({ error: 'User not found' })
   }
   await DiscordAPI.findOneAndUpdate(
     { discordId },
@@ -26,19 +26,20 @@ router.post('/mail', async(req: Request, res: Response) => {
       { discordId },
       { verificationToken, verificationTokenExpiresAt: expiresAt }
     );
-
+    
+    const settings = settingsParser();
     const transporter = nodemailer.createTransport({
-      host: String(process.env.SMTP_HOST),
-      port: Number(process.env.SMTP_PORT),
+      host: String(settings.smtp.host),
+      port: Number(settings.smtp.port),
       secure: false, // upgrade later with STARTTLS
       auth: {
-        user: String(process.env.SMTP_USER),
-        pass: String(process.env.SMTP_PASS),
+        user: String(settings.smtp.user),
+        pass: String(settings.smtp.pass),
       },
     });
 
     const mailOptions = {
-      from: `${process.env.COMPANY_NAME} <${process.env.SMTP_MAIL}>`,
+      from: `${settings.companyName} <${settings.smtp.mail}>`,
       to: email,
       subject: 'Email Verification',
       text: `Your code for verification is: 
@@ -98,7 +99,7 @@ router.post('/mail', async(req: Request, res: Response) => {
     };
 
     transporter.sendMail(mailOptions);
-    res.status(200).send('Email Sent');
+    res.status(200).json({ message: 'Email Sent' });
   } catch (error) {
     console.error('Error sending verification email:', error);
     res.status(500).json({ error: 'An error occurred while sending the verification email.' });
@@ -110,14 +111,14 @@ router.post('/token', async(req: Request, res: Response) => {
   const discordId = req.body.discordId;
 
   if (!token || !discordId) {
-    return res.status(404).send('Invalid Request');
+    return res.status(404).json({ error: 'Invalid Request' });
   }
 
   try {
     const user = await DiscordAPI.findOne({ discordId });
 
     if (!user) {
-      return res.status(404).send('User not found');
+      return res.status(404).json({ error: 'User not found' });
     }
 
     const expiresAt = user.verificationTokenExpiresAt;
@@ -127,12 +128,12 @@ router.post('/token', async(req: Request, res: Response) => {
         { discordId },
         { $unset: { verificationToken: '', verificationTokenExpiresAt: '' } }
       );
-      return res.status(400).send('Token Expired');
+      return res.status(400).json({ error: 'Token Expired' });
     }
 
 
     if (user.verified === 'true') {
-      return res.status(400).send('User already verified');
+      return res.status(400).json({ error: 'User already verified'});
     }
 
     if (user.verificationToken === token) {
@@ -145,13 +146,13 @@ router.post('/token', async(req: Request, res: Response) => {
         { $unset: { verificationToken: '', verificationTokenExpiresAt: '' } }
       );
 
-      return res.status(200).send('Verified');
+      return res.status(200).json({ message: 'Verified' });
     } else {
-      return res.status(404).send('Invalid Token');
+      return res.status(404).json({ error: 'Invalid Token' });
     }
   } catch (error) {
     console.error('Error verifying token:', error);
-    res.status(500).json({ error: 'An error occurred while verifying the token.' });
+    return res.status(500).json({ error: 'An error occurred while verifying the token.' });
   }
 });
 

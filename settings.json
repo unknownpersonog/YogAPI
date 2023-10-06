@@ -1,0 +1,10 @@
+{
+  "companyName": "UnknownVPS",
+  "smtp": {
+    "host": "smtp-relay.brevo.com",
+    "port": "587",
+    "user": "drnehapawar98@gmail.com",
+    "pass": "YSTw86G7X50bLMrR",
+    "mail": "admin@unknownvps.eu.org"
+  }
+}
