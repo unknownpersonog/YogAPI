@@ -4,9 +4,9 @@ config();
 import { connectDb } from './database'
 
 const PORT = process.env.PORT || 3001;
-
+const ENV = process.env.ENVIRONMENT || 'PRODUCTION';
 async function main() {
-    console.log(`Running in ${process.env.ENVIRONMENT} mode.`)
+    console.log(`Running in ${ENV} mode.`)
     try {
         await connectDb();
         const app = createApp();

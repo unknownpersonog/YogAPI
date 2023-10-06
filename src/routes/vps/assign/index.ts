@@ -8,10 +8,10 @@ router.use('/', queue({ activeLimit: 1, queuedLimit: -1 }))
 router.post('/', async(req: Request, res: Response) => {
     const discordId = req.body.discordId;
     const plan = req.body.plan;
-    const availableVPSId = await assignNextAvailableVPS();
+    const availableVPSId = await assignNextAvailableVPS(plan); 
 
     if (availableVPSId === 0) {
-      return res.status(500).send('No VPS in stock')
+      return res.status(500).json({ error: 'No VPS in stock' })
     }
 
     try {
@@ -23,25 +23,26 @@ router.post('/', async(req: Request, res: Response) => {
           try {
               await DiscordAPI.findOneAndUpdate(
                 { discordId: discordId },
-                { $set: { "vps.id": availableVPSId } },
+                { $push: { "vps": { id: availableVPSId } } },
                 { new: true }
-              )
+              );            
           }
           catch (err) {
-              return res.status(500).send('Error while updating user data')
+              console.log(err)
+              return res.status(500).json({ error: 'Error while updating user data' })
           }
-          res.status(200).send(`VPS ${availableVPSId} assigned to Discord user ${discordId}`);
+          res.status(200).json({ messsage: `VPS ${availableVPSId} assigned to Discord user ${discordId}` });
     }
     catch (err) {
-        return res.status(500).send('Internal Server Error')
+        return res.status(500).json({ error: 'Internal Server Error' });
     }
 })
 
-async function assignNextAvailableVPS() {
+async function assignNextAvailableVPS(plan: string) {
   try {
     // Find the first available VPS with owner tag "N/A" by sorting the VPS collection in ascending order of the ID.
     const firstAvailableVPS = await vps
-      .findOne({ owner: 'N/A' })
+      .findOne({ owner: 'N/A', plan: plan })
       .sort({ id: 1 })
       .select({ id: 1, _id: 0 })
       
@@ -52,8 +53,7 @@ async function assignNextAvailableVPS() {
     // If the first available VPS has the owner tag "N/A," return it as the next available VPS.
     return firstAvailableVPS.id.toString();;
   } catch (err) {
-    console.error('Error assigning VPS:', err);
-    throw err; // You can handle the error appropriately based on your use case.
+    return console.error('Error assigning VPS:', err);
   }
 }
 

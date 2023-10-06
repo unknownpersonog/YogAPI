@@ -13,17 +13,18 @@ router.post('/', async (req: Request, res: Response) => {
       const vpsPass = req.body.vps_pass;
       const vpsUser = req.body.vps_user;
       const vpsIp = req.body.vps_ip;
+      const vpsPlan = req.body.vps_plan;
       const vpsId = await getLastId() + 1;
   
-      if (!vpsName || !vpsOs) {
-        return res.status(400).send('Invalid Request Body!');
+      if (!vpsName || !vpsOs || !vpsPort || !vpsPass || !vpsUser || !vpsIp || !vpsPlan) {
+        return res.status(400).json({ error: 'Invalid Request Body!' });
       }
   
       const existingVPS = await vps.findOne({ vpsId });
       if (existingVPS) {
-        return res.status(409).send('VPS already exists');
+        return res.status(409).json({ error: 'VPS already exists' });
       }
-  
+
       const newVPS = new vps({
         port: vpsPort,
         name: vpsName,
@@ -31,15 +32,16 @@ router.post('/', async (req: Request, res: Response) => {
         id: vpsId,
         pass: vpsPass,
         user: vpsUser,
+        plan: vpsPlan,
         ip: vpsIp
       });
   
       await newVPS.save();
   
-      res.status(200).send('VPS created successfully');
+      res.status(200).json({ message: 'VPS created successfully' });
     } catch (err) {
       console.error('Error creating vps:', err);
-      res.status(500).send('Internal Server Error');
+      res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 

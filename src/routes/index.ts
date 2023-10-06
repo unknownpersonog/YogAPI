@@ -5,8 +5,8 @@ import vpsRouter from './vps';
 const router = Router();
 
 router.use('/users', usersRouter);
-router.use('/vps', vpsRouter)
-router.use('/ping', responseTime())
+router.use('/vps', vpsRouter);
+router.use('/ping', responseTime());
 
 router.get('/ping', async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -16,7 +16,7 @@ router.get('/ping', async (req: Request, res: Response, next: NextFunction) => {
   
       res.json(responseObj);
     } catch (err) {
-      res.status(501).send('Internal Server Error');
+      res.status(501).json({ error: 'Internal Server Error'});
     }
   });
 

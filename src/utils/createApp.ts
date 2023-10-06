@@ -1,10 +1,10 @@
 import { config } from 'dotenv'; 
 import express, { Express } from 'express';
-import cors from 'cors';
 import session from 'express-session';
-import passport from 'passport';
 import routes from '../routes';
+import passport from 'passport';
 import store from 'connect-mongo';
+import { checkAuthorization } from '../services/checkAuthorization';
 
 config();
 
@@ -15,9 +15,6 @@ export function createApp(): Express {
     app.use(express.json());
     app.use(express.urlencoded());
     
-    // Using CORS to block external requests
-    app.use(cors({ origin: ['http://0.0.0.0'], credentials: true }));
-
     app.use(
         session({
             secret: 'CKDJVBIBVPBVAPFJDJKAHFHYEBFUJIAJAJK',
@@ -29,12 +26,14 @@ export function createApp(): Express {
             }),
         })
     );
-    
-    // Passport basic setup
-    app.use(passport.initialize());
-    app.use(passport.session());
 
+  // Enable Passport
+  app.use(passport.initialize());
+  app.use(passport.session());
+
+  app.use((req, res, next) => setTimeout(() => next(), 800));
+  
     // Render /api as default
-    app.use('/api', routes);
+    app.use('/api', checkAuthorization, routes);
     return app;
 }
