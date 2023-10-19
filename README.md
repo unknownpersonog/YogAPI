@@ -59,11 +59,7 @@ This guide considers you have Node 16 or 18 installed and you are doing all thin
 ```bash
   nano .env
 ```
-##### Step 10 - Create a settings.json file and fill the required details from example settings.json in the repository
-```bash
-  nano settings.json
-```
-##### Step 11 - Run the API
+##### Step 10 - Run the API
 ```bash
   node index.js
 ```
@@ -142,3 +138,5 @@ This guide considers you have Node 16 or 18 installed and you are doing all thin
 | Parameter | Type     | Description                       |
 | :-------- | :------- | :-------------------------------- |
 | `discordId`      | `string` | **Required**. Discord ID to assign VPS to. |
+
+### These API routes can change without being updated on every updated, check code for better infomation
