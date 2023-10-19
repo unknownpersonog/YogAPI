@@ -2,7 +2,6 @@ import { config } from 'dotenv'
 import { Request, Response, Router } from "express";
 import nodemailer from 'nodemailer';
 import { DiscordAPI } from "../../../database/schemas";
-import { settingsParser } from '../../../services/settingsParser';
 config();
 
 const router = Router();
@@ -27,19 +26,18 @@ router.post('/mail', async(req: Request, res: Response) => {
       { verificationToken, verificationTokenExpiresAt: expiresAt }
     );
     
-    const settings = settingsParser();
     const transporter = nodemailer.createTransport({
-      host: String(settings.smtp.host),
-      port: Number(settings.smtp.port),
+      host: String(process.env.SMTP_HOST),
+      port: Number(process.env.SMTP_PORT),
       secure: false, // upgrade later with STARTTLS
       auth: {
-        user: String(settings.smtp.user),
-        pass: String(settings.smtp.pass),
+        user: String(process.env.SMTP_USER),
+        pass: String(process.env.SMTP_PASS),
       },
     });
 
     const mailOptions = {
-      from: `${settings.companyName} <${settings.smtp.mail}>`,
+      from: `${process.env.COMPANY} <${process.env.SMTP_MAIL}>`,
       to: email,
       subject: 'Email Verification',
       text: `Your code for verification is: 
@@ -78,7 +76,7 @@ router.post('/mail', async(req: Request, res: Response) => {
                       <p style="padding-bottom: 16px;" align="center">Please use the verification code below to sign in.</p>
                       <p style="padding-bottom: 16px; font-size: 30px; " align="center"><strong style="font-size: 130%">${verificationToken}</strong></p>
                       <p style="padding-bottom: 16px;" align="center">If you didn’t request this, you can ignore this email.</p>
-                      <p style="padding-bottom: 16px" align="center">Thanks,<br> ${settings.companyName}</p>
+                      <p style="padding-bottom: 16px" align="center">Thanks,<br> ${process.env.COMPANY}</p>
                     </div>
                   </div>
                   <div style="padding-top: 20px; color: rgb(153, 153, 153); text-align: center; --darkreader-inline-color: #a8a095;"
