@@ -4,7 +4,7 @@
   "description": "UnknownVPS Client Area by Unknown VPS Ltd.",
   "main": "index.ts",
   "scripts": {
-    "start": "nodemon ./src/index.ts,
+    "start": "nodemon ./src/index.ts",
     "test": "nodemon ./src/index.ts",
     "testtreeks": "nodemon ./src/treeks.ts",
     "build": "tsc"
