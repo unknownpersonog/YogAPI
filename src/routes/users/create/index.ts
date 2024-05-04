@@ -4,23 +4,20 @@ const router = Router();
 
 router.post('/', async (req: Request, res: Response) => {
     try {
-      const discordId = req.body.discordId;
+      const method = req.body.method;
       const email = req.body.email;
-      if (!discordId || !email) {
+      if (!method || !email) {
         return res.status(400).json({ error: 'Invalid Request Body!'})
       }
 
-      const existingUser = await DiscordAPI.findOne({ discordId });
+      const existingUser = await DiscordAPI.findOne({ email });
       if (existingUser) {
       return res.status(409).json({ error: 'User already exists' });
     }
 
       const newUser = new DiscordAPI({
         email,
-        discordId,
-        vps: [
-          { id: '0' }
-        ]
+        method
     });
   
       await newUser.save();
