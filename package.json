@@ -5,8 +5,8 @@
   "main": "index.ts",
   "scripts": {
     "start": "nodemon ./src/index.ts",
-    "test": "node ./dist/index.js",
-    "testtreeks": "nodemon ./src/treeks.ts",
+    "dev": "node ./dist/index.js",
+    "deploy": "vercel --prod",
     "build": "tsc"
   },
   "repository": {
