@@ -24,5 +24,14 @@ router.get('/info/:email', async (req: Request, res: Response) => {
   }
 });
 
+router.get('/list', async (req: Request, res: Response) => {
+  try {
+		const users = await DiscordAPI.find();
+    res.status(200).json(users)
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+})
 
 export default router;
