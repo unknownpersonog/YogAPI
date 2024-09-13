@@ -1,3 +1,4 @@
 import DiscordAPI from './DiscordAPI'
 import vps from './vps'
-export { DiscordAPI, vps };
+import Project from './projects'
+export { DiscordAPI, vps, Project };

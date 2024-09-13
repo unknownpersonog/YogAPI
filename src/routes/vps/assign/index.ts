@@ -6,7 +6,7 @@ const router = Router();
 
 router.use('/', queue({ activeLimit: 1, queuedLimit: -1 }))    
 router.post('/', async(req: Request, res: Response) => {
-    const discordId = req.body.discordId;
+    const email = req.body.email;
     const plan = req.body.plan;
     const availableVPSId = await assignNextAvailableVPS(plan); 
 
@@ -17,13 +17,13 @@ router.post('/', async(req: Request, res: Response) => {
     try {
         await vps.findOneAndUpdate(
             { id: availableVPSId, owner: 'N/A' },
-            { $set: { owner: discordId } },
+            { $set: { owner: email } },
             { new: true } // Return the updated VPS document.
           );
           try {
               await DiscordAPI.findOneAndUpdate(
-                { discordId: discordId },
-                { $push: { "vps": { id: availableVPSId } } },
+                { email: email },
+                { $push: { "vpsIds": { id: availableVPSId } } },
                 { new: true }
               );            
           }
@@ -31,7 +31,7 @@ router.post('/', async(req: Request, res: Response) => {
               console.log(err)
               return res.status(500).json({ error: 'Error while updating user data' })
           }
-          res.status(200).json({ messsage: `VPS ${availableVPSId} assigned to Discord user ${discordId}` });
+          res.status(200).json({ messsage: `VPS ${availableVPSId} assigned to Discord user ${email}` });
     }
     catch (err) {
         return res.status(500).json({ error: 'Internal Server Error' });
