@@ -3,11 +3,13 @@ import responseTime from 'response-time';
 import usersRouter from './users';
 import vpsRouter from './vps';
 import projectsRouter from './project'
+import servicesRouter from './services';
 const router = Router();
 
 router.use('/users', usersRouter);
 router.use('/vps', vpsRouter);
 router.use('/projects', projectsRouter)
+router.use('/services', servicesRouter)
 router.use('/ping', responseTime());
 
 router.get('/ping', async (req: Request, res: Response, next: NextFunction) => {
