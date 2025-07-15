@@ -4,3 +4,4 @@ yarn.lock
 dist
 settings.json
 .vercel
+package-lock.json

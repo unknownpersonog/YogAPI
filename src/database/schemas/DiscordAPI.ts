@@ -7,7 +7,8 @@ const discordAPISchema = new mongoose.Schema({
     coins: { type: Number, required: false },
     joinDate: { type: Date, required: true },
     unid: { type: String, required: true },
-    vpsIds: [{ type: Number }], // Array of VPS IDs
+    vpsIds: [{ type: Number }],
+    unread: [{ type: Number }],
 });
   
   export default mongoose.model('discordUsers', discordAPISchema)
