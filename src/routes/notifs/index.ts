@@ -91,8 +91,8 @@ router.get("/mark-all-read/:email", async (req: Request, res: Response) => {
     return res.status(200).json({ message: "No unread notifications" });
   }
 
-  // Find all non-OTN, non-level-3 notification IDs in user's unread
-  const notifs = await Notification.find({ id: { $in: user.unread }, otn: { $ne: true } });
+  // Find all non-level-3 notification IDs in user's unread
+  const notifs = await Notification.find({ id: { $in: user.unread }});
   const toRemove = notifs.filter(n => n.level !== 3).map(n => n.id);
 
   await DiscordAPI.updateOne(
@@ -100,7 +100,7 @@ router.get("/mark-all-read/:email", async (req: Request, res: Response) => {
     { $pull: { unread: { $in: toRemove } } }
   );
 
-  res.status(200).json({ message: "All non-critical, non-OTN notifications marked as read" });
+  res.status(200).json({ message: "All non-critical, notifications marked as read" });
 });
 
 // Get unread notifications for a user
@@ -109,6 +109,46 @@ router.get("/unread/:email", async (req: Request, res: Response) => {
   if (!user) return res.status(404).json({ error: "User not found" });
   const notifs = await Notification.find({ id: { $in: user.unread || [] } });
   res.status(200).json({ notifications: notifs });
+});
+
+// Flush expired OTN notifications (non-level-3)
+router.get("/flush-otn", async (req: Request, res: Response) => {
+  try {
+    const cutoff = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000);
+
+    const result = await Notification.deleteMany({
+      otn: true,
+      level: { $ne: 3 },
+      expiresAt: { $lte: cutoff },
+    });
+
+    res.status(200).json({
+      message: "Expired OTN notifications flushed",
+      deletedCount: result.deletedCount,
+    });
+  } catch (error) {
+    console.error("Error flushing OTN notifications:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+// Get all non-OTN notifications (for admins)
+router.get("/non-otn", async (req: Request, res: Response) => {
+  try {
+    const notifications = await Notification.find({ otn: { $ne: true } }).sort({ id: -1 });
+    res.status(200).json({ notifications });
+  } catch (error) {
+    console.error("Error fetching non-OTN notifications:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.post("/delete", async (req: Request, res: Response) => {
+  const { id } = req.body;
+  if (!id) return res.status(400).json({ error: "Missing notification ID" });
+
+  await Notification.deleteOne({ id: Number(id) });
+  res.status(200).json({ success: true });
 });
 
 export default router;
